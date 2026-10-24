@@ -1,6 +1,135 @@
 @API_HostAddress = http://localhost:5114
 
-GET {{API_HostAddress}}/weatherforecast/
-Accept: application/json
+### boas-vindas da API
+GET {{API_HostAddress}}/
 
-###
+### cria o usuario (id 1)
+POST {{API_HostAddress}}/user/create
+Content-Type: application/json
+
+{
+  "username": "maria",
+  "email": "maria@email.com",
+  "password": "senha123"
+}
+
+### tenta criar o mesmo usuario de novo (409)
+POST {{API_HostAddress}}/user/create
+Content-Type: application/json
+
+{
+  "username": "maria",
+  "email": "maria@email.com",
+  "password": "senha123"
+}
+
+### busca o usuario (sem a senha)
+GET {{API_HostAddress}}/user/1
+
+### cria o rotulo Faculdade (id 1)
+POST {{API_HostAddress}}/label/create
+Content-Type: application/json
+
+{
+  "name": "Faculdade",
+  "userId": 1
+}
+
+### cria o rotulo Casa (id 2)
+POST {{API_HostAddress}}/label/create
+Content-Type: application/json
+
+{
+  "name": "Casa",
+  "userId": 1
+}
+
+### lista os rotulos do usuario
+GET {{API_HostAddress}}/label/list/1
+
+### tarefa com rotulo e prazo no futuro (id 1)
+POST {{API_HostAddress}}/tasks/create
+Content-Type: application/json
+
+{
+  "name": "Trabalho final",
+  "description": "API do ManagerTask",
+  "dueDate": "2027-06-30T23:59:00",
+  "userId": 1,
+  "labelId": 1
+}
+
+### tarefa com prazo no passado, vai aparecer como atrasada (id 2)
+POST {{API_HostAddress}}/tasks/create
+Content-Type: application/json
+
+{
+  "name": "Pagar conta de luz",
+  "dueDate": "2026-01-10T00:00:00",
+  "userId": 1,
+  "labelId": 2
+}
+
+### tarefa sem rotulo e sem prazo (id 3)
+POST {{API_HostAddress}}/tasks/create
+Content-Type: application/json
+
+{
+  "name": "Ler um livro",
+  "userId": 1
+}
+
+### mais uma tarefa da faculdade (id 4)
+POST {{API_HostAddress}}/tasks/create
+Content-Type: application/json
+
+{
+  "name": "Lista de exercicios",
+  "userId": 1,
+  "labelId": 1
+}
+
+### lista todas as tarefas do usuario com o rotulo
+GET {{API_HostAddress}}/tasks/list/1
+
+### busca uma tarefa pelo id
+GET {{API_HostAddress}}/tasks/1
+
+### conclui a tarefa 4
+PATCH {{API_HostAddress}}/tasks/status/4
+
+### tarefas pendentes
+GET {{API_HostAddress}}/tasks/pending/1
+
+### tarefas concluidas
+GET {{API_HostAddress}}/tasks/completed/1
+
+### tarefas atrasadas
+GET {{API_HostAddress}}/tasks/overdue/1
+
+### tarefas do rotulo Faculdade
+GET {{API_HostAddress}}/tasks/by-label/1
+
+### painel do usuario
+GET {{API_HostAddress}}/summary/1
+
+### edita a tarefa 3 e coloca o rotulo Casa
+PUT {{API_HostAddress}}/tasks/update/3
+Content-Type: application/json
+
+{
+  "name": "Ler um livro",
+  "description": "um capitulo por dia",
+  "isCompleted": false,
+  "dueDate": "2027-01-31T00:00:00",
+  "labelId": 2
+}
+
+### apaga a tarefa 2
+DELETE {{API_HostAddress}}/tasks/delete/2
+
+### painel depois das mudancas
+GET {{API_HostAddress}}/summary/1
+
+### tarefa que nao existe (404)
+GET {{API_HostAddress}}/tasks/99

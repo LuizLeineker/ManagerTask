@@ -5,6 +5,7 @@ public class AppDataContext : DbContext
 {
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Task> Tasks { get; set; } = null!;
+    public DbSet<Label> Labels { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -23,5 +24,12 @@ public class AppDataContext : DbContext
         modelBuilder.Entity<Task>()
         .Property(t => t.CreatedAt)
         .HasDefaultValueSql("datetime('now', 'localtime')");
+
+        // Rótulo tem várias tarefas (1-N), se apagar o rótulo a tarefa fica sem rótulo
+        modelBuilder.Entity<Label>()
+        .HasMany<Task>()
+        .WithOne(t => t.Label)
+        .HasForeignKey(t => t.LabelId)
+        .OnDelete(DeleteBehavior.SetNull);
     }
 }

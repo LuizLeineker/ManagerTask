@@ -16,6 +16,26 @@ namespace API.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
+            modelBuilder.Entity("Label", b =>
+                {
+                    b.Property<int>("LabelId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("LabelId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Labels");
+                });
+
             modelBuilder.Entity("Task", b =>
                 {
                     b.Property<int>("TaskId")
@@ -30,10 +50,16 @@ namespace API.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsCompleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(false);
+
+                    b.Property<int?>("LabelId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -44,6 +70,8 @@ namespace API.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("TaskId");
+
+                    b.HasIndex("LabelId");
 
                     b.HasIndex("UserId");
 
@@ -82,17 +110,35 @@ namespace API.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Task", b =>
+            modelBuilder.Entity("Label", b =>
                 {
                     b.HasOne("User", null)
-                        .WithMany("Tasks")
+                        .WithMany("Labels")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Task", b =>
+                {
+                    b.HasOne("Label", "Label")
+                        .WithMany()
+                        .HasForeignKey("LabelId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("User", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Label");
+                });
+
             modelBuilder.Entity("User", b =>
                 {
+                    b.Navigation("Labels");
+
                     b.Navigation("Tasks");
                 });
 #pragma warning restore 612, 618

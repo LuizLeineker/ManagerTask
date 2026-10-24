@@ -15,6 +15,8 @@ public class User
     [MinLength(5), MaxLength(30)] public string Password { get; set; } = null!;
     // Tarefas relacionadas ao user
     public List<Task> Tasks { get; set; } = new List<Task>();
+    // Rótulos do user
+    public List<Label> Labels { get; set; } = new List<Label>();
     
   
 }
