@@ -1,10 +1,10 @@
-@API_HostAddress = http://localhost:5114
+@url = http://localhost:5114
 
-### boas-vindas da API
-GET {{API_HostAddress}}/
 
-### cria o usuario (id 1)
-POST {{API_HostAddress}}/user/create
+GET {{url}}/
+
+### cria o usuario 
+POST {{url}}/user/create
 Content-Type: application/json
 
 {
@@ -13,42 +13,26 @@ Content-Type: application/json
   "password": "senha123"
 }
 
-### tenta criar o mesmo usuario de novo (409)
-POST {{API_HostAddress}}/user/create
+
+
+### busca o usuario 
+GET {{url}}/user/1
+
+### cria o rotulo Faculdade para o id 1
+POST {{url}}/label/create
 Content-Type: application/json
 
 {
-  "username": "maria",
-  "email": "maria@email.com",
-  "password": "senha123"
-}
-
-### busca o usuario (sem a senha)
-GET {{API_HostAddress}}/user/1
-
-### cria o rotulo Faculdade (id 1)
-POST {{API_HostAddress}}/label/create
-Content-Type: application/json
-
-{
-  "name": "Faculdade",
+  "name": "Faculdade  2",
   "userId": 1
 }
 
-### cria o rotulo Casa (id 2)
-POST {{API_HostAddress}}/label/create
-Content-Type: application/json
-
-{
-  "name": "Casa",
-  "userId": 1
-}
 
 ### lista os rotulos do usuario
-GET {{API_HostAddress}}/label/list/1
+GET {{url}}/label/list/1
 
-### tarefa com rotulo e prazo no futuro (id 1)
-POST {{API_HostAddress}}/tasks/create
+### tarefa com rotulo e prazo
+POST {{url}}/tasks/create
 Content-Type: application/json
 
 {
@@ -59,62 +43,19 @@ Content-Type: application/json
   "labelId": 1
 }
 
-### tarefa com prazo no passado, vai aparecer como atrasada (id 2)
-POST {{API_HostAddress}}/tasks/create
-Content-Type: application/json
 
-{
-  "name": "Pagar conta de luz",
-  "dueDate": "2026-01-10T00:00:00",
-  "userId": 1,
-  "labelId": 2
-}
 
-### tarefa sem rotulo e sem prazo (id 3)
-POST {{API_HostAddress}}/tasks/create
-Content-Type: application/json
+### lista todas as tarefas do user 1
+GET {{url}}/tasks/list/1
 
-{
-  "name": "Ler um livro",
-  "userId": 1
-}
+### busca tarefa por id
+GET {{url}}/tasks/1
 
-### mais uma tarefa da faculdade (id 4)
-POST {{API_HostAddress}}/tasks/create
-Content-Type: application/json
+### update status
+PATCH {{url}}/tasks/status/1
 
-{
-  "name": "Lista de exercicios",
-  "userId": 1,
-  "labelId": 1
-}
-
-### lista todas as tarefas do usuario com o rotulo
-GET {{API_HostAddress}}/tasks/list/1
-
-### busca uma tarefa pelo id
-GET {{API_HostAddress}}/tasks/1
-
-### conclui a tarefa 4
-PATCH {{API_HostAddress}}/tasks/status/4
-
-### tarefas pendentes
-GET {{API_HostAddress}}/tasks/pending/1
-
-### tarefas concluidas
-GET {{API_HostAddress}}/tasks/completed/1
-
-### tarefas atrasadas
-GET {{API_HostAddress}}/tasks/overdue/1
-
-### tarefas do rotulo Faculdade
-GET {{API_HostAddress}}/tasks/by-label/1
-
-### painel do usuario
-GET {{API_HostAddress}}/summary/1
-
-### edita a tarefa 3 e coloca o rotulo Casa
-PUT {{API_HostAddress}}/tasks/update/3
+### update task
+PUT {{url}}/tasks/update/3
 Content-Type: application/json
 
 {
@@ -125,11 +66,9 @@ Content-Type: application/json
   "labelId": 2
 }
 
-### apaga a tarefa 2
-DELETE {{API_HostAddress}}/tasks/delete/2
+### delete tarefa
+DELETE {{url}}/tasks/delete/2
 
-### painel depois das mudancas
-GET {{API_HostAddress}}/summary/1
 
-### tarefa que nao existe (404)
-GET {{API_HostAddress}}/tasks/99
+
+
