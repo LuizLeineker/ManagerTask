@@ -1,25 +1,42 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
     Box, Button, Container, Paper, TextField,
     Typography, List, ListItem, ListItemText,
-    Checkbox, IconButton, Divider, Alert
+    Checkbox, IconButton, Divider, Alert,
+    MenuItem, Chip
 } from "@mui/material";
-import { Delete } from "@mui/icons-material";
+import { Delete, Event } from "@mui/icons-material";
 import api from "../../api/api";
 import { Task } from "../../models/Task";
+import { Label } from "../../models/Label";
+import { formatDate, isOverdue } from "../../utils/date";
 
 function SearchTask() {
     const { userId } = useParams();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [labels, setLabels] = useState<Label[]>([]);
     const [search, setSearch] = useState("");
+    const [labelFilter, setLabelFilter] = useState(searchParams.get("label") ?? "all");
+    const [statusFilter, setStatusFilter] = useState("all");
     const [error, setError] = useState("");
 
     useEffect(() => {
         loadTasks();
+        loadLabels();
     }, [userId]);
+
+    async function loadLabels() {
+        try {
+            const { data } = await api.get(`/label/list/${userId}`);
+            setLabels(data);
+        } catch {
+            setError("Não foi possível carregar as etiquetas.");
+        }
+    }
 
     async function loadTasks() {
         try {
@@ -50,6 +67,10 @@ function SearchTask() {
 
     const filteredTasks = tasks.filter(task =>
         task.name.toLowerCase().includes(search.toLowerCase())
+        && (labelFilter === "all"
+            || (labelFilter === "none" ? task.labelId == null : task.labelId === Number(labelFilter)))
+        && (statusFilter === "all"
+            || (statusFilter === "done" ? task.isCompleted : !task.isCompleted))
     );
 
     return (
@@ -70,6 +91,39 @@ function SearchTask() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
             />
+
+            <Box sx={{ display: "flex", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}>
+                <TextField
+                    select
+                    label="Etiqueta"
+                    fullWidth
+                    margin="normal"
+                    value={labelFilter}
+                    onChange={e => setLabelFilter(e.target.value)}
+                >
+                    <MenuItem value="all">Todas</MenuItem>
+                    <MenuItem value="none">Sem etiqueta</MenuItem>
+
+                    {labels.map(label => (
+                        <MenuItem key={label.labelId} value={String(label.labelId)}>
+                            {label.name}
+                        </MenuItem>
+                    ))}
+                </TextField>
+
+                <TextField
+                    select
+                    label="Status"
+                    fullWidth
+                    margin="normal"
+                    value={statusFilter}
+                    onChange={e => setStatusFilter(e.target.value)}
+                >
+                    <MenuItem value="all">Todos</MenuItem>
+                    <MenuItem value="pending">Pendentes</MenuItem>
+                    <MenuItem value="done">Concluídas</MenuItem>
+                </TextField>
+            </Box>
 
             <Paper sx={{ mt: 3 }}>
                 {filteredTasks.length === 0 ? (
@@ -98,8 +152,35 @@ function SearchTask() {
                                     />
 
                                     <ListItemText
+                                        slotProps={{ secondary: { component: "div" } }}
                                         primary={task.name}
-                                        secondary={task.description || "Sem descrição"}
+                                        secondary={
+                                            <Box>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {task.description || "Sem descrição"}
+                                                </Typography>
+
+                                                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+                                                    {task.label && (
+                                                        <Chip
+                                                            className="label-chip"
+                                                            label={task.label.name}
+                                                            size="small"
+                                                        />
+                                                    )}
+
+                                                    {task.dueDate && (
+                                                        <Chip
+                                                            icon={<Event />}
+                                                            label={formatDate(task.dueDate)}
+                                                            size="small"
+                                                            color={isOverdue(task.dueDate, task.isCompleted) ? "error" : "default"}
+                                                            variant="outlined"
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Box>
+                                        }
                                     />
 
                                     <Button
