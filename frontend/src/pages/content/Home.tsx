@@ -14,12 +14,12 @@ function Home() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                bgcolor: "#f4f6f8",
                 p: 2
             }}
         >
             <Container maxWidth="sm">
                 <Paper
+                    className="form-card"
                     elevation={4}
                     sx={{
                         p: { xs: 4, sm: 6 },

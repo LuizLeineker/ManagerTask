@@ -8,16 +8,19 @@ import {
 } from "@mui/material";
 import {
     Add, Search, Delete, Logout,
-    LabelOutlined
+    LabelOutlined, Event
 } from "@mui/icons-material";
 import api from "../../api/api";
 import { Task } from "../../models/Task";
+import { Summary } from "../../models/Summary";
+import { formatDate, isOverdue } from "../../utils/date";
 
 function Dashboard() {
     const { userId } = useParams();
     const navigate = useNavigate();
 
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [summary, setSummary] = useState<Summary | null>(null);
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -26,8 +29,12 @@ function Dashboard() {
 
     async function loadTasks() {
         try {
-            const { data } = await api.get(`/tasks/list/${userId}`);
-            setTasks(data);
+            const [taskResponse, summaryResponse] = await Promise.all([
+                api.get(`/tasks/list/${userId}`),
+                api.get(`/tasks/summary/${userId}`)
+            ]);
+            setTasks(taskResponse.data);
+            setSummary(summaryResponse.data);
             setError("");
         } catch {
             setError("Não foi possível carregar as tarefas.");
@@ -56,9 +63,16 @@ function Dashboard() {
         navigate("/signin");
     }
 
+    const cards = summary ? [
+        { title: "Total", value: summary.total, className: "stat-card" },
+        { title: "Pendentes", value: summary.pending, className: "stat-card stat-card--pending" },
+        { title: "Concluídas", value: summary.completed, className: "stat-card stat-card--done" },
+        { title: "Atrasadas", value: summary.overdue, className: "stat-card stat-card--late" }
+    ] : [];
+
     return (
-        <Box sx={{ minHeight: "100vh", bgcolor: "#f4f6f8" }}>
-            <AppBar position="static">
+        <Box className="app-page">
+            <AppBar position="static" className="app-bar">
                 <Toolbar>
                     <Typography
                         variant="h6"
@@ -79,6 +93,7 @@ function Dashboard() {
 
             <Container maxWidth="md" sx={{ py: 4 }}>
                 <Typography
+                    className="page-title"
                     variant="h4"
                     sx={{ fontWeight: "bold", mb: 1 }}
                 >
@@ -122,7 +137,51 @@ function Dashboard() {
 
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-                <Paper elevation={2}>
+                {summary && (
+                    <>
+                        <Box className="stat-grid">
+                            {cards.map(card => (
+                                <Paper key={card.title} className={card.className} elevation={0}>
+                                    <Typography className="stat-card__value">
+                                        {card.value}
+                                    </Typography>
+                                    <Typography className="stat-card__title">
+                                        {card.title}
+                                    </Typography>
+                                </Paper>
+                            ))}
+                        </Box>
+
+                        {summary.dueToday > 0 && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                Você tem {summary.dueToday} tarefa(s) vencendo hoje.
+                            </Alert>
+                        )}
+
+                        {summary.byLabel.length > 0 && (
+                            <Paper className="section-card" elevation={0} sx={{ p: 2, mb: 3 }}>
+                                <Typography sx={{ fontWeight: "bold", mb: 1 }}>
+                                    Tarefas por etiqueta
+                                </Typography>
+
+                                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                                    {summary.byLabel.map(item => (
+                                        <Chip
+                                            key={item.labelId ?? "none"}
+                                            className="label-chip"
+                                            label={`${item.name}: ${item.pending} pendente(s) de ${item.total}`}
+                                            onClick={() => navigate(
+                                                `/tasks/search/${userId}?label=${item.labelId ?? "none"}`
+                                            )}
+                                        />
+                                    ))}
+                                </Box>
+                            </Paper>
+                        )}
+                    </>
+                )}
+
+                <Paper elevation={2} className="section-card">
                     {tasks.length === 0 ? (
                         <Box sx={{ p: 4, textAlign: "center" }}>
                             <Typography color="text.secondary">
@@ -150,6 +209,7 @@ function Dashboard() {
                                         />
 
                                         <ListItemText
+                                            slotProps={{ secondary: { component: "div" } }}
                                             primary={
                                                 <Typography sx={{
                                                     fontWeight: "medium",
@@ -178,8 +238,19 @@ function Dashboard() {
 
                                                     {task.label && (
                                                         <Chip
+                                                            className="label-chip"
                                                             label={task.label.name}
                                                             size="small"
+                                                        />
+                                                    )}
+
+                                                    {task.dueDate && (
+                                                        <Chip
+                                                            icon={<Event />}
+                                                            label={formatDate(task.dueDate)}
+                                                            size="small"
+                                                            color={isOverdue(task.dueDate, task.isCompleted) ? "error" : "default"}
+                                                            variant="outlined"
                                                         />
                                                     )}
                                                 </Box>

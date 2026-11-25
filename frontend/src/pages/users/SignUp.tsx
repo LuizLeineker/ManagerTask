@@ -50,10 +50,9 @@ function SignUp() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            bgcolor: "#f4f6f8",
             p: 2
         }}>
-            <Paper elevation={4} sx={{
+            <Paper elevation={4} className="form-card" sx={{
                 width: "100%",
                 maxWidth: 420,
                 p: 4,
