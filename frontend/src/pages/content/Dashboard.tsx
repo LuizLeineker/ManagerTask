@@ -93,6 +93,7 @@ function Dashboard() {
 
             <Container maxWidth="md" sx={{ py: 4 }}>
                 <Typography
+                    className="page-title"
                     variant="h4"
                     sx={{ fontWeight: "bold", mb: 1 }}
                 >

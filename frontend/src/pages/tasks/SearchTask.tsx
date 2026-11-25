@@ -76,6 +76,7 @@ function SearchTask() {
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
             <Typography
+                className="page-title"
                 variant="h4"
                 sx={{ fontWeight: "bold", mb: 3 }}
             >
@@ -125,7 +126,7 @@ function SearchTask() {
                 </TextField>
             </Box>
 
-            <Paper sx={{ mt: 3 }}>
+            <Paper className="section-card" sx={{ mt: 3 }}>
                 {filteredTasks.length === 0 ? (
                     <Box sx={{ p: 3 }}>
                         <Typography color="text.secondary">

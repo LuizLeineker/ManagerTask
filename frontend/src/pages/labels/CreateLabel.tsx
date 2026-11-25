@@ -35,7 +35,7 @@ function CreateLabel() {
 
     return (
         <Container maxWidth="sm" sx={{ py: 4 }}>
-            <Paper sx={{ p: 4, borderRadius: 3 }}>
+            <Paper className="form-card" sx={{ p: 4 }}>
                 <Typography
                     variant="h4"
                     sx={{ fontWeight: "bold", mb: 3 }}

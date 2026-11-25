@@ -41,6 +41,7 @@ function ListLabels() {
     return (
         <Container maxWidth="sm" sx={{ py: 4 }}>
             <Typography
+                className="page-title"
                 variant="h4"
                 sx={{ fontWeight: "bold", mb: 3 }}
             >
@@ -58,7 +59,7 @@ function ListLabels() {
                 Nova etiqueta
             </Button>
 
-            <Paper>
+            <Paper className="section-card">
                 {labels.length === 0 ? (
                     <Box sx={{ p: 3 }}>
                         <Typography color="text.secondary">
