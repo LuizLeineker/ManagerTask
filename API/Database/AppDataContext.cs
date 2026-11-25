@@ -1,10 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 
-
 public class AppDataContext : DbContext
 {
     public DbSet<User> Users { get; set; } = null!;
-    public DbSet<Task> Tasks { get; set; } = null!;
+    public DbSet<TaskItem> Tasks { get; set; } = null!;
     public DbSet<Label> Labels { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -12,24 +11,39 @@ public class AppDataContext : DbContext
         optionsBuilder.UseSqlite("Data Source=managertask.db");
     }
 
-     protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-       
-        // Criar tarefa como falso 
-        modelBuilder.Entity<Task>()
-        .Property(t => t.IsCompleted)
-        .HasDefaultValue(false);
+        modelBuilder.Entity<TaskItem>().ToTable("Tasks");
 
-        // Data e hora do sistema 
-        modelBuilder.Entity<Task>()
-        .Property(t => t.CreatedAt)
-        .HasDefaultValueSql("datetime('now', 'localtime')");
+        // Tarefa nasce como não concluída
+        modelBuilder.Entity<TaskItem>()
+            .Property(t => t.IsCompleted)
+            .HasDefaultValue(false);
 
-        // Rótulo tem várias tarefas (1-N), se apagar o rótulo a tarefa fica sem rótulo
+        // Data e hora do sistema
+        modelBuilder.Entity<TaskItem>()
+            .Property(t => t.CreatedAt)
+            .HasDefaultValueSql("datetime('now', 'localtime')");
+
+        // Usuário 1-N Tarefas (apagar o usuário apaga as tarefas)
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Tasks)
+            .WithOne()
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Usuário 1-N Etiquetas (apagar o usuário apaga as etiquetas)
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Labels)
+            .WithOne()
+            .HasForeignKey(l => l.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Etiqueta 1-N Tarefas: se apagar a etiqueta a tarefa fica sem etiqueta
         modelBuilder.Entity<Label>()
-        .HasMany<Task>()
-        .WithOne(t => t.Label)
-        .HasForeignKey(t => t.LabelId)
-        .OnDelete(DeleteBehavior.SetNull);
+            .HasMany<TaskItem>()
+            .WithOne(t => t.Label)
+            .HasForeignKey(t => t.LabelId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
