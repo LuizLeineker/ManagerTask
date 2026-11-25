@@ -431,3 +431,8 @@ FodyWeavers.xsd
 *.db
 *.db-shm
 *.db-wal
+
+# ManagerTask
+dist/
+build/
+.env
