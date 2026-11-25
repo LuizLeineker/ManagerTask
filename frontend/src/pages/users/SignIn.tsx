@@ -5,7 +5,7 @@ import {
     InputAdornment, IconButton, Alert
 } from "@mui/material";
 import {
-    PersonOutlined, EmailOutlined, LockOutlined,
+    PersonOutlined, LockOutlined,
     Visibility, VisibilityOff
 } from "@mui/icons-material";
 import api from "../../api/api";
@@ -101,23 +101,12 @@ function SignIn() {
                         onChange={e => setIdentifier(e.target.value)}
                         slotProps={{
                             htmlInput: {
-                                minLength: 5,
-                                maxLength: 30
+                                maxLength: 256
                             },
                             input: {
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <LockOutlined />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
+                                        <PersonOutlined />
                                     </InputAdornment>
                                 )
                             }
