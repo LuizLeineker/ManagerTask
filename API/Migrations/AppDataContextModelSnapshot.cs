@@ -24,6 +24,7 @@ namespace API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(30)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
@@ -36,7 +37,7 @@ namespace API.Migrations
                     b.ToTable("Labels");
                 });
 
-            modelBuilder.Entity("Task", b =>
+            modelBuilder.Entity("TaskItem", b =>
                 {
                     b.Property<int>("TaskId")
                         .ValueGeneratedOnAdd()
@@ -75,7 +76,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("User", b =>
@@ -91,7 +92,7 @@ namespace API.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(30)
+                        .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Username")
@@ -119,7 +120,7 @@ namespace API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Task", b =>
+            modelBuilder.Entity("TaskItem", b =>
                 {
                     b.HasOne("Label", "Label")
                         .WithMany()
