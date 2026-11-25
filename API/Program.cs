@@ -2,9 +2,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AcessoTotal", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+
+
 builder.Services.AddDbContext<AppDataContext>();
 var app = builder.Build();
 
+app.UseCors("AcessoTotal");
 
 app.MapGet("/", () => "Bem vindo ao ManagerTask!");
 
@@ -26,6 +41,25 @@ app.MapPost("/user/create", async ([FromBody] User user, [FromServices] AppDataC
 
     return Results.Created("", new { user.UserId, user.Username, user.Email });
 });
+
+
+app.MapPost("/user/login", async (User login, AppDataContext db) =>
+{
+    var user = await db.Users.FirstOrDefaultAsync(u =>
+        (u.Username == login.Username || u.Email == login.Email)
+        && u.Password == login.Password);
+
+    if (user == null)
+        return Results.Unauthorized();
+
+    return Results.Ok(new
+    {
+        user.UserId,
+        user.Username,
+        user.Email
+    });
+});
+
 
 // busca dados do user
 app.MapGet("/user/{id}", async ([FromRoute] int id, [FromServices] AppDataContext context) =>
