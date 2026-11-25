@@ -10,7 +10,6 @@ public class User
 
     [MaxLength(256)] public string Email { get; set; } = string.Empty;
 
-    // Guarda o hash da senha (PasswordHasher), nunca a senha em texto puro
     [MaxLength(256)] public string Password { get; set; } = string.Empty;
 
     // Tarefas do usuário (1-N)

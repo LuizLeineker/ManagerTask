@@ -1,8 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 
-// Chamada de TaskItem para não conflitar com System.Threading.Tasks.Task.
-// No banco a tabela continua se chamando "Tasks" e no JSON as propriedades
-// saem em camelCase (taskId, name, description, ...).
 public class TaskItem
 {
     [Key]

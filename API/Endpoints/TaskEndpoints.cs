@@ -44,7 +44,7 @@ public static class TaskEndpoints
             return Results.Created($"/tasks/{task.TaskId}", task);
         });
 
-        // Listar as tarefas de um usuário (pendentes primeiro, depois por vencimento)
+        // Listar tarefas do usuário
         group.MapGet("/list/{userId}", async ([FromRoute] int userId, [FromServices] AppDataContext context) =>
         {
             if (!await context.Users.AnyAsync(u => u.UserId == userId))
@@ -64,7 +64,7 @@ public static class TaskEndpoints
             return Results.Ok(tasks);
         });
 
-        // Resumo para o dashboard: total, concluídas, pendentes, atrasadas e contagem por etiqueta
+        // Resumo do dashboard
         group.MapGet("/summary/{userId}", async ([FromRoute] int userId, [FromServices] AppDataContext context) =>
         {
             if (!await context.Users.AnyAsync(u => u.UserId == userId))

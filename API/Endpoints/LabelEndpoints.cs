@@ -79,7 +79,7 @@ public static class LabelEndpoints
             return Results.Ok(label);
         });
 
-        // Excluir etiqueta (as tarefas dela ficam sem etiqueta)
+        // Excluir etiqueta
         group.MapDelete("/delete/{id}", async ([FromRoute] int id, [FromServices] AppDataContext context) =>
         {
             var label = await context.Labels.FindAsync(id);

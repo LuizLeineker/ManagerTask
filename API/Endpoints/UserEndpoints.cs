@@ -57,7 +57,7 @@ public static class UserEndpoints
                 return Results.Unauthorized();
             }
 
-            await context.SaveChangesAsync(); // salva caso a senha tenha sido migrada para hash
+            await context.SaveChangesAsync();
             return Results.Ok(UserResponse.From(user));
         });
 
@@ -104,7 +104,7 @@ public static class UserEndpoints
             return Results.Ok(UserResponse.From(user));
         });
 
-        // Exclusão (tarefas e etiquetas vão junto, em cascata)
+        // Exclusão
         group.MapDelete("/delete/{id}", async ([FromRoute] int id, [FromServices] AppDataContext context) =>
         {
             var user = await context.Users.FindAsync(id);
@@ -131,7 +131,6 @@ public static class UserEndpoints
         return null;
     }
 
-    // Confere a senha; se o registro for antigo (senha em texto puro), converte para hash.
     private static bool VerifyPassword(User user, string password)
     {
         try

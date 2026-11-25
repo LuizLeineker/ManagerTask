@@ -25,21 +25,21 @@ public class AppDataContext : DbContext
             .Property(t => t.CreatedAt)
             .HasDefaultValueSql("datetime('now', 'localtime')");
 
-        // Usuário 1-N Tarefas (apagar o usuário apaga as tarefas)
+        // Usuário tem várias tarefas (1-N)
         modelBuilder.Entity<User>()
             .HasMany(u => u.Tasks)
             .WithOne()
             .HasForeignKey(t => t.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Usuário 1-N Etiquetas (apagar o usuário apaga as etiquetas)
+        // Usuário tem várias etiquetas (1-N)
         modelBuilder.Entity<User>()
             .HasMany(u => u.Labels)
             .WithOne()
             .HasForeignKey(l => l.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Etiqueta 1-N Tarefas: se apagar a etiqueta a tarefa fica sem etiqueta
+        // Etiqueta tem várias tarefas (1-N), se apagar a etiqueta a tarefa fica sem etiqueta
         modelBuilder.Entity<Label>()
             .HasMany<TaskItem>()
             .WithOne(t => t.Label)

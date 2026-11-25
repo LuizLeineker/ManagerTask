@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CORS liberado para o frontend React rodando localmente
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AcessoTotal", policy =>
@@ -14,7 +13,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// JSON em camelCase (padrão do System.Text.Json): taskId, name, isCompleted...
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
@@ -26,8 +24,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Aplica as migrations automaticamente: quem clonar o repositório
-// não precisa rodar "dotnet ef database update" para criar o banco.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDataContext>();
